@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "facify-website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:\\Users\\aidan\\facify-website", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}

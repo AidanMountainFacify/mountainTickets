@@ -1,0 +1,816 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --border: #e3e5e8;
+  --text: #1c2024;
+  --text-dim: #6b7280;
+  --accent: #5e6ad2;
+  --accent-hover: #4e59c4;
+  --radius: 8px;
+  --danger-bg: #fdecea;
+  --danger-text: #b3261e;
+  --danger-border: #f2c9c5;
+  --success-bg: #e6f6ea;
+  --success-text: #2f8f4e;
+  --chip-bg: #eef0ff;
+  --border-hover: #c7cad1;
+  --overlay: rgba(0, 0, 0, 0.35);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #16171b;
+  --surface: #1e2025;
+  --border: #33353c;
+  --text: #e7e8ea;
+  --text-dim: #9296a1;
+  --accent: #7681e8;
+  --accent-hover: #8791ee;
+  --danger-bg: #3a2220;
+  --danger-text: #f28b82;
+  --danger-border: #5c2e2b;
+  --success-bg: #1d3327;
+  --success-text: #6fcf97;
+  --chip-bg: #262a4a;
+  --border-hover: #494c56;
+  --overlay: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 19px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.workspace-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.workspace-pill-active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.workspace-pill-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.workspace-pill-manage {
+  margin-left: auto;
+  color: var(--text-dim);
+}
+
+.topbar h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 420px;
+  padding: 11px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 17px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.topbar .primary-btn {
+  margin-left: auto;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  width: 44px;
+  height: 44px;
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg);
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+.secondary-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.error-banner {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.loading {
+  padding: 50px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 18px;
+}
+
+.board {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 0 0 340px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.column-collapse-toggle {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  line-height: 1;
+  padding: 3px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.column-collapse-toggle:hover {
+  background: var(--border);
+}
+
+.column-title-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  padding: 3px 6px;
+  margin: -3px -6px;
+}
+
+.column-title-input:hover,
+.column-title-input:focus {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.column-count {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.column-add,
+.column-delete {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--text-dim);
+  cursor: pointer;
+  line-height: 1;
+  padding: 3px 9px;
+  border-radius: 4px;
+}
+
+.column-add:hover {
+  background: var(--border);
+}
+
+.column-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 48px;
+  padding: 5px;
+  border-radius: var(--radius);
+  overflow-y: auto;
+}
+
+.column-body-over {
+  background: var(--chip-bg);
+}
+
+.column-empty {
+  color: var(--text-dim);
+  font-size: 15px;
+  padding: 10px;
+  text-align: center;
+}
+
+.column-collapsed-summary {
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: 15px;
+  font-family: inherit;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.column-collapsed-summary:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ticket-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ticket-card:hover {
+  border-color: var(--border-hover);
+}
+
+.ticket-card-id {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.workspace-chip {
+  display: inline-block;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+.ticket-card-title {
+  font-size: 17px;
+  margin-bottom: 11px;
+  line-height: 1.4;
+}
+
+.ticket-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.priority-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.checklist-badge {
+  font-size: 13px;
+  color: var(--text-dim);
+  background: var(--bg);
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+
+.checklist-badge-done {
+  color: var(--success-text);
+  background: var(--success-bg);
+}
+
+.ticket-card-labels {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.label-chip {
+  background: var(--chip-bg);
+  color: var(--accent);
+  font-size: 14px;
+  padding: 2px 9px;
+  border-radius: 10px;
+}
+
+.deadline-chip {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text-dim);
+  background: var(--bg);
+  padding: 2px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.deadline-chip-overdue {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 10px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.ticket-modal {
+  max-width: 1200px;
+  padding: 32px 38px;
+  max-height: 92vh;
+}
+
+.new-ticket-modal {
+  max-width: 560px;
+  padding: 26px 30px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.ticket-modal-title {
+  width: 100%;
+  font-size: 25px;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  padding: 5px 0;
+  margin-bottom: 18px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ticket-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 36px;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+  margin: 18px 0 8px;
+}
+
+.field-label:first-child {
+  margin-top: 0;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 8px;
+}
+
+.field-label-row .field-label {
+  margin: 0;
+}
+
+.checklist-progress {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.checklist-section {
+  margin-bottom: 4px;
+}
+
+.checklist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.checklist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checklist-checkbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.checklist-text {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 16px;
+  padding: 5px 7px;
+  margin: -5px -7px;
+  color: var(--text);
+}
+
+.checklist-text:hover,
+.checklist-text:focus {
+  border-color: var(--border);
+  background: var(--bg);
+}
+
+.checklist-text-done {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.checklist-delete {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-dim);
+  cursor: pointer;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.checklist-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.checklist-add-form {
+  display: flex;
+  gap: 8px;
+}
+
+.checklist-add-form input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ticket-modal-description,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 17px;
+  resize: vertical;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ticket-modal-sidebar select,
+.ticket-modal-sidebar input,
+.new-ticket-modal select,
+.new-ticket-modal input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  font-size: 17px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.comments-empty {
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.comment {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 11px 13px;
+}
+
+.comment-meta {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 5px;
+}
+
+.comment-body {
+  font-size: 17px;
+  white-space: pre-wrap;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-form button {
+  align-self: flex-end;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  margin-top: 24px;
+  width: 100%;
+  background: none;
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
+  padding: 11px;
+  border-radius: var(--radius);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: var(--danger-bg);
+}
+
+.new-ticket-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.new-ticket-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.workspace-modal {
+  max-width: 560px;
+  padding: 26px 30px;
+}
+
+.workspace-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.workspace-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: var(--radius);
+}
+
+.workspace-row-name {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.workspace-row-delete {
+  background: none;
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
+  padding: 7px 12px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.workspace-row-delete:hover {
+  background: var(--danger-bg);
+}
+
+.color-picker {
+  display: flex;
+  gap: 6px;
+}
+
+.color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.color-swatch-selected {
+  border-color: var(--text);
+}
+
+.workspace-create-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.workspace-create-form input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.add-column-tile {
+  flex: 0 0 220px;
+}
+
+.add-column-btn {
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.add-column-btn:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.add-column-tile-editing input {
+  width: 100%;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.delete-column-modal {
+  max-width: 440px;
+  padding: 26px 30px;
+}
+
+.delete-column-message {
+  margin: 0 0 14px;
+  color: var(--text-dim);
+}
+
+.delete-column-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

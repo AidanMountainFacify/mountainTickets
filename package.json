@@ -1,0 +1,27 @@
+{
+  "name": "mountain-tickets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local, self-hosted Jira/Linear-style kanban ticket tracker (desktop app)",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently -n server,client,electron -c blue,green,magenta \"npm:dev:server\" \"npm:dev:client\" \"npm:dev:electron\"",
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "npm run dev --prefix client",
+    "dev:electron": "wait-on http://localhost:4000/api/tickets http://localhost:5173 && cross-env ELECTRON_DEV=1 electron .",
+    "build": "npm run build --prefix client",
+    "app": "npm run build && electron .",
+    "start": "node server/index.js",
+    "install:all": "npm install && npm install --prefix client",
+    "install:server": "npm install --omit=dev && npm install --prefix client"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^43.0.0",
+    "wait-on": "^8.0.1"
+  }
+}
