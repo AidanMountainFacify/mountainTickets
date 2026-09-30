@@ -4,6 +4,8 @@ import TicketModal from './components/TicketModal';
 import NewTicketModal from './components/NewTicketModal';
 import WorkspaceModal from './components/WorkspaceModal';
 import DeleteColumnModal from './components/DeleteColumnModal';
+import TodayView from './components/TodayView';
+import DailyHistoryModal from './components/DailyHistoryModal';
 import { api } from './api';
 import { waitForPendingSaves } from './pendingSaves';
 
@@ -11,14 +13,17 @@ export default function App() {
   const [tickets, setTickets] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);
   const [statuses, setStatuses] = useState([]);
+  const [dailyItems, setDailyItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTicket, setActiveTicket] = useState(null);
   const [newTicketStatusId, setNewTicketStatusId] = useState(null);
   const [managingWorkspaces, setManagingWorkspaces] = useState(false);
   const [deletingStatus, setDeletingStatus] = useState(null);
+  const [showDailyHistory, setShowDailyHistory] = useState(false);
   const [search, setSearch] = useState('');
   const [currentWorkspaceId, setCurrentWorkspaceId] = useState('all');
+  const [showTodayDrawer, setShowTodayDrawer] = useState(false);
   const [collapsedStatusIds, setCollapsedStatusIds] = useState(() => {
     try {
       const saved = localStorage.getItem('mt-collapsed-columns');
@@ -82,11 +87,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    Promise.all([api.listTickets(), api.listWorkspaces(), api.listStatuses()])
-      .then(([t, w, s]) => {
+    Promise.all([api.listTickets(), api.listWorkspaces(), api.listStatuses(), api.listDailyItems()])
+      .then(([t, w, s, d]) => {
         setTickets(t);
         setWorkspaces(w);
         setStatuses(s);
+        setDailyItems(d);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -239,6 +245,58 @@ export default function App() {
     }
   }
 
+  async function handleAddDailyNote(text) {
+    try {
+      const item = await api.createDailyItem({ kind: 'note', text });
+      setDailyItems((prev) => [...prev, item]);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function handleAddDailyTicket(ticketId) {
+    try {
+      const item = await api.createDailyItem({ kind: 'ticket', ticket_id: ticketId });
+      setDailyItems((prev) => [...prev, item]);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function handleToggleDailyItem(id, checked) {
+    try {
+      const updated = await api.updateDailyItem(id, { checked });
+      setDailyItems((prev) => {
+        // Once unchecked-but-old items roll off (they stay, since "today"
+        // includes anything unfinished), a freshly checked item still
+        // belongs in the visible list until the view is reloaded — so just
+        // update it in place rather than filtering it out immediately.
+        return prev.map((i) => (i.id === id ? updated : i));
+      });
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function handleDeleteDailyItem(id) {
+    try {
+      await api.deleteDailyItem(id);
+      setDailyItems((prev) => prev.filter((i) => i.id !== id));
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  function openTicketFromDailyItem(ticketStub) {
+    // Daily items only carry a partial ticket (id/title/workspace_id/status_id)
+    // for display — TicketModal needs the full record.
+    const full = tickets.find((t) => t.id === ticketStub.id);
+    if (full) {
+      setShowDailyHistory(false);
+      setActiveTicket(full);
+    }
+  }
+
   return (
     <div className="app">
       <header className="topbar">
@@ -286,6 +344,12 @@ export default function App() {
         <button className="workspace-pill workspace-pill-manage" onClick={() => setManagingWorkspaces(true)}>
           Manage
         </button>
+        <button
+          className={`workspace-pill ${showTodayDrawer ? 'workspace-pill-active' : ''}`}
+          onClick={() => setShowTodayDrawer((v) => !v)}
+        >
+          🗒️ Today
+        </button>
       </div>
 
       {error && (
@@ -295,7 +359,7 @@ export default function App() {
       )}
 
       {loading ? (
-        <div className="loading">Loading board...</div>
+        <div className="loading">Loading...</div>
       ) : (
         <Board
           tickets={filteredTickets}
@@ -312,6 +376,20 @@ export default function App() {
           onToggleCollapse={toggleColumnCollapse}
         />
       )}
+
+      <TodayView
+        open={showTodayDrawer}
+        items={dailyItems}
+        tickets={tickets}
+        workspacesById={workspacesById}
+        onToggle={handleToggleDailyItem}
+        onAddNote={handleAddDailyNote}
+        onAddTicket={handleAddDailyTicket}
+        onDelete={handleDeleteDailyItem}
+        onOpenTicket={openTicketFromDailyItem}
+        onOpenHistory={() => setShowDailyHistory(true)}
+        onClose={() => setShowTodayDrawer(false)}
+      />
 
       {activeTicket && (
         <TicketModal
@@ -354,6 +432,13 @@ export default function App() {
           otherStatuses={statuses.filter((s) => s.id !== deletingStatus.id)}
           onClose={() => setDeletingStatus(null)}
           onConfirm={(reassignTo) => finishDeleteStatus(deletingStatus.id, reassignTo)}
+        />
+      )}
+
+      {showDailyHistory && (
+        <DailyHistoryModal
+          onClose={() => setShowDailyHistory(false)}
+          onOpenTicket={openTicketFromDailyItem}
         />
       )}
     </div>

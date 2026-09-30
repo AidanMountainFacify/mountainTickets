@@ -54,6 +54,18 @@ db.exec(`
     position REAL NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS daily_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind TEXT NOT NULL CHECK (kind IN ('ticket', 'note')),
+    ticket_id INTEGER REFERENCES tickets(id) ON DELETE CASCADE,
+    text TEXT DEFAULT '',
+    checked INTEGER NOT NULL DEFAULT 0,
+    position REAL NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    checked_at TEXT,
+    checked_date TEXT
+  );
 `);
 
 // Migration for databases created before workspaces existed.
