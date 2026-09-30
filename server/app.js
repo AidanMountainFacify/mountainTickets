@@ -3,6 +3,7 @@ const path = require('node:path');
 const ticketsRouter = require('./routes/tickets');
 const workspacesRouter = require('./routes/workspaces');
 const statusesRouter = require('./routes/statuses');
+const dailyItemsRouter = require('./routes/dailyItems');
 
 function createApp() {
   const app = express();
@@ -11,6 +12,7 @@ function createApp() {
   app.use('/api/tickets', ticketsRouter);
   app.use('/api/workspaces', workspacesRouter);
   app.use('/api/statuses', statusesRouter);
+  app.use('/api/daily-items', dailyItemsRouter);
 
   const clientDist = path.join(__dirname, '..', 'client', 'dist');
   app.use(express.static(clientDist));

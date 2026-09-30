@@ -3,6 +3,7 @@ import { trackSave } from './pendingSaves';
 const BASE = '/api/tickets';
 const WORKSPACES_BASE = '/api/workspaces';
 const STATUSES_BASE = '/api/statuses';
+const DAILY_BASE = '/api/daily-items';
 
 async function handle(res) {
   if (!res.ok) {
@@ -106,4 +107,25 @@ export const api = {
         body: JSON.stringify(data || {}),
       }).then(handle)
     ),
+
+  listDailyItems: () => fetch(DAILY_BASE).then(handle),
+  createDailyItem: (data) =>
+    trackSave(
+      fetch(DAILY_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(handle)
+    ),
+  updateDailyItem: (id, data) =>
+    trackSave(
+      fetch(`${DAILY_BASE}/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(handle)
+    ),
+  deleteDailyItem: (id) => trackSave(fetch(`${DAILY_BASE}/${id}`, { method: 'DELETE' }).then(handle)),
+  listDailyHistoryDates: () => fetch(`${DAILY_BASE}/history`).then(handle),
+  listDailyHistoryForDate: (date) => fetch(`${DAILY_BASE}/history/${date}`).then(handle),
 };
